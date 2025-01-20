@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import pl.edu.pw.mini.zpoif.currencychartsfullstack.domain.CurrenciesWrapper;
-import pl.edu.pw.mini.zpoif.currencychartsfullstack.domain.CurrencyBean;
 import pl.edu.pw.mini.zpoif.currencychartsfullstack.domain.CurrencyRates;
 import pl.edu.pw.mini.zpoif.currencychartsfullstack.excpetions.NbpApiClientException;
 import pl.edu.pw.mini.zpoif.currencychartsfullstack.services.NbpApiClient;
@@ -31,7 +30,7 @@ public class NbpApiClientImpl implements NbpApiClient {
     @Override
     public CurrenciesWrapper getAllCurrencies() {
         final ParameterizedTypeReference<List<CurrenciesWrapper>> listCurrencies =
-                new ParameterizedTypeReference<List<CurrenciesWrapper>>() {};
+                new ParameterizedTypeReference<>() {};
 
         try {
             final ResponseEntity<List<CurrenciesWrapper>> response = restTemplate.exchange(
@@ -52,7 +51,7 @@ public class NbpApiClientImpl implements NbpApiClient {
     @Override
     public CurrencyRates getCurrencyPrices(String currencyCode, Date startDate, Date endDate) {
         final ParameterizedTypeReference<CurrencyRates> currencyRates =
-                new ParameterizedTypeReference<CurrencyRates>() {};
+                new ParameterizedTypeReference<>() {};
 
         try {
             final ResponseEntity<CurrencyRates> response = restTemplate.exchange(
