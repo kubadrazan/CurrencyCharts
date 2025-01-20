@@ -2,30 +2,41 @@
   <div>
     <h1 class="currency_display">PLN</h1>
     <div class="currencies_selection">
-      <!--      <h1 v-for="currency in currencies" :key="currency.id" class="currency_display"> {{currency.text}}</h1>-->
       <q-chip square v-for="(currency, index) in currencies" :key="index" :size="chipSize"
               removable @remove="removeFromCurrecyList(currency)"  color="primary" text-color="white">
-        {{ currency}}
+        {{ currency.code }}
       </q-chip>
-      <div v-if="count<5" class="dropdown">
+      <div v-if="count < 5" class="dropdown">
         <button class="dropdown-button" @click="toggleDropdown">+</button>
         <ul v-if="isOpen" class="dropdown-menu">
-          <li v-for="(item, index) in options" :key="index" @click="selectItem(item)">{{ item }}</li>
+          <li v-for="(item, index) in options" :key="index" @click="selectItem(item)">{{ item.currency }}</li>
         </ul>
       </div>
     </div>
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import CurrencyService from "../services/CurrencyService";
+import type Currency from "src/interfaces/Currency";
+
 export default {
+  props: {
+    modelValue: {
+      type: Array,
+      required: true,
+    },
+  },
   data() {
     return {
       count: 0,
       isOpen: false,
-      options: ['Eur', 'Usd', 'Gbp', 'Jpy', 'Chf', 'Cad', 'Aud', 'Nzd'],
-      currencies: []
-    }
+      options: [] as Currency[], // Use Currency[] for an array of Currency objects
+      currencies: [] as Currency[], // Use Currency[] for an array of Currency objects
+    };
+  },
+  mounted() {
+    this.getOptions();
   },
   computed: {
     chipSize() {
@@ -42,21 +53,44 @@ export default {
     toggleDropdown() {
       this.isOpen = !this.isOpen;
     },
-    selectItem(item) {
+    selectItem(item: Currency) {
       this.isOpen = false;
-      this.currencies.push(item)
-      this.count++
-      this.options = this.options.filter(option => option !== item)
+      this.currencies.push(item);
+      this.$emit('update:modelValue', this.currencies);
+      this.count++;
+      this.options = this.options.filter(option => option !== item);
     },
-    removeFromCurrecyList(deletedItem){
-      this.currencies = this.currencies.filter(item => item !== deletedItem)
-      this.options.push(deletedItem)
-      this.count--
-    }
-  }
-}
+    removeFromCurrecyList(deletedItem: Currency) {
+      this.currencies = this.currencies.filter(item => item !== deletedItem);
+      this.$emit('update:modelValue', this.currencies);
+      this.options.push(deletedItem);
+      this.count--;
+    },
+    async getOptions() {
+      try {
+        const currencyService = new CurrencyService();
+        this.options = await currencyService.getCurrencies();
+      } catch (error) {
+        this.options = [
+          { code: 'EUR', currency: 'Euro' },
+          { code: 'USD', currency: 'US Dollar' },
+          { code: 'GBP', currency: 'British Pound' },
+          { code: 'JPY', currency: 'Japanese Yen' },
+          { code: 'AUD', currency: 'Australian Dollar' },
+          { code: 'CAD', currency: 'Canadian Dollar' },
+          { code: 'CHF', currency: 'Swiss Franc' },
+          { code: 'CNY', currency: 'Chinese Yuan' },
+          { code: 'INR', currency: 'Indian Rupee' },
+          { code: 'MXN', currency: 'Mexican Peso' }
 
+        ];
+        console.error("Failed to fetch currencies", error);
+      }
+    },
+  },
+};
 </script>
+
 
 <style>
 
