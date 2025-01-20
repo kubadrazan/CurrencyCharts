@@ -1,4 +1,5 @@
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
+import axios from "axios";
+import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 
 class ApiService {
   private axiosInstance: AxiosInstance;
@@ -10,8 +11,8 @@ class ApiService {
 
     // Add interceptors
     this.axiosInstance.interceptors.response.use(
-      this.handleSuccess,
-      this.handleError
+      (response) => this.handleSuccess(response),  // Arrow function binds `this`
+      (error) => this.handleError(error)           // Arrow function binds `this`
     );
   }
 
@@ -19,9 +20,9 @@ class ApiService {
     return response;
   }
 
-  private handleError(error: any): Promise<never> {
+  private handleError(error: Error): Promise<never> {
     console.error("API Error:", error);
-    return Promise.reject(error);
+    return Promise.reject(error); // Ensure rejection reason is an Error
   }
 
   protected async get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
@@ -29,5 +30,5 @@ class ApiService {
     return response.data;
   }
 }
-export default ApiService;
 
+export default ApiService;

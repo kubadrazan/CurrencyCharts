@@ -2,12 +2,11 @@
   <div>
     <h1 class="currency_display">PLN</h1>
     <div class="currencies_selection">
-      <!--      <h1 v-for="currency in currencies" :key="currency.id" class="currency_display"> {{currency.text}}</h1>-->
       <q-chip square v-for="(currency, index) in currencies" :key="index" :size="chipSize"
               removable @remove="removeFromCurrecyList(currency)"  color="primary" text-color="white">
-        {{ currency.currency}}
+        {{ currency.code }}
       </q-chip>
-      <div v-if="count<5" class="dropdown">
+      <div v-if="count < 5" class="dropdown">
         <button class="dropdown-button" @click="toggleDropdown">+</button>
         <ul v-if="isOpen" class="dropdown-menu">
           <li v-for="(item, index) in options" :key="index" @click="selectItem(item)">{{ item.currency }}</li>
@@ -17,17 +16,18 @@
   </div>
 </template>
 
-<script>
-import CurrencyService from "../services/CurrencyService.js"
-import {options} from "axios";
+<script lang="ts">
+import CurrencyService from "../services/CurrencyService";
+import type Currency from "src/interfaces/Currency";
+
 export default {
   data() {
     return {
       count: 0,
       isOpen: false,
-      options: [],/*['Eur', 'Usd', 'Gbp', 'Jpy', 'Chf', 'Cad', 'Aud', 'Nzd'],*/
-      currencies: []
-    }
+      options: [] as Currency[], // Use Currency[] for an array of Currency objects
+      currencies: [] as Currency[], // Use Currency[] for an array of Currency objects
+    };
   },
   mounted() {
     this.getOptions();
@@ -47,22 +47,24 @@ export default {
     toggleDropdown() {
       this.isOpen = !this.isOpen;
     },
-    selectItem(item) {
+    selectItem(item: Currency) { // Explicitly type item as Currency
       this.isOpen = false;
-      this.currencies.push(item)
-      this.count++
-      this.options = this.options.filter(option => option !== item)
+      this.currencies.push(item);
+      this.count++;
+      this.options = this.options.filter(option => option !== item);
     },
-    removeFromCurrecyList(deletedItem){
-      this.currencies = this.currencies.filter(item => item !== deletedItem)
-      this.options.push(deletedItem)
-      this.count--
+    removeFromCurrecyList(deletedItem: Currency) { // Explicitly type deletedItem as Currency
+      this.currencies = this.currencies.filter(item => item !== deletedItem);
+      this.options.push(deletedItem);
+      this.count--;
     },
     async getOptions() {
       try {
-        const response = await CurrencyService.getCurrencies();
-        this.options = response.data; // Assuming response data contains the options
+        const currencyService = new CurrencyService();
+        const response = await currencyService.getCurrencies(); // Ensure the service method exists
+        this.options = response; // Assuming response data contains the options
       } catch (error) {
+        // Handle error gracefully
         this.options = [
           { code: 'EUR', currency: 'Euro' },
           { code: 'USD', currency: 'US Dollar' },
@@ -70,11 +72,11 @@ export default {
         ];
         console.error("Failed to fetch currencies", error);
       }
-    }
-  }
-}
-
+    },
+  },
+};
 </script>
+
 
 <style>
 

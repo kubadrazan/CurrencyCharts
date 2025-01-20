@@ -1,8 +1,8 @@
 <template>
-  <Line id="my-chart-id" :options="options" :data="data" />
+  <LineChartComponent id="my-chart-id" :options="options" :data="data" />
 </template>
 
-<script>
+<script lang="ts">
 import { Line } from 'vue-chartjs'
 import {
   Chart as ChartJS,
@@ -25,7 +25,7 @@ ChartJS.register(
 )
 export default {
   name: 'LineChart',
-  components: { Line },
+  components: { LineChartComponent: Line },
   data() {
     return {
       baseCurrency: 'PLN',

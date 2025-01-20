@@ -1,5 +1,5 @@
 import ApiService from "./ApiService";
-import Currency from "../interfaces/Currency"
+import type Currency from "../interfaces/Currency"
 class CurrencyService extends ApiService
 {
   constructor()
@@ -10,3 +10,4 @@ class CurrencyService extends ApiService
     return this.get<Currency[]>("/currencies/all");
   }
 }
+export default CurrencyService
