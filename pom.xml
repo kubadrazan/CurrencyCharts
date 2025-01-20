@@ -136,7 +136,7 @@
                 <artifactId>maven-resources-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>Copy Vue frontend into Spring Boot target static folder</id>
+                        <id>Copy quasar frontend into Spring Boot target static folder</id>
                         <phase>process-resources</phase>
                         <goals>
                             <goal>copy-resources</goal>
@@ -145,8 +145,8 @@
                             <outputDirectory>target/classes/static</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>src/frontend/dist</directory>
-                                    <filtering>true</filtering>
+                                    <directory>src/frontend/dist/spa</directory>
+                                    <filtering>false</filtering> 
                                 </resource>
                             </resources>
                         </configuration>
