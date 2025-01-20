@@ -11,8 +11,8 @@ class ApiService {
 
     // Add interceptors
     this.axiosInstance.interceptors.response.use(
-      (response) => this.handleSuccess(response),  // Arrow function binds `this`
-      (error) => this.handleError(error)           // Arrow function binds `this`
+      (response) => this.handleSuccess(response),
+      (error) => this.handleError(error)
     );
   }
 
@@ -22,7 +22,7 @@ class ApiService {
 
   private handleError(error: Error): Promise<never> {
     console.error("API Error:", error);
-    return Promise.reject(error); // Ensure rejection reason is an Error
+    return Promise.reject(error);
   }
 
   protected async get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {

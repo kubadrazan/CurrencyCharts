@@ -47,13 +47,13 @@ export default {
     toggleDropdown() {
       this.isOpen = !this.isOpen;
     },
-    selectItem(item: Currency) { // Explicitly type item as Currency
+    selectItem(item: Currency) {
       this.isOpen = false;
       this.currencies.push(item);
       this.count++;
       this.options = this.options.filter(option => option !== item);
     },
-    removeFromCurrecyList(deletedItem: Currency) { // Explicitly type deletedItem as Currency
+    removeFromCurrecyList(deletedItem: Currency) {
       this.currencies = this.currencies.filter(item => item !== deletedItem);
       this.options.push(deletedItem);
       this.count--;
@@ -61,10 +61,8 @@ export default {
     async getOptions() {
       try {
         const currencyService = new CurrencyService();
-        const response = await currencyService.getCurrencies(); // Ensure the service method exists
-        this.options = response; // Assuming response data contains the options
+        this.options = await currencyService.getCurrencies();
       } catch (error) {
-        // Handle error gracefully
         this.options = [
           { code: 'EUR', currency: 'Euro' },
           { code: 'USD', currency: 'US Dollar' },
