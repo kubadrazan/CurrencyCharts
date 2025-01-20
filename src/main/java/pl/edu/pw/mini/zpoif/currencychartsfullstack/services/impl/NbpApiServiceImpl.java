@@ -10,9 +10,12 @@ import pl.edu.pw.mini.zpoif.currencychartsfullstack.services.NbpApiService;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class NbpApiServiceImpl implements NbpApiService {
+
+    private final int MAX_DAYS_RANGE = 367;
 
     private final NbpApiClient nbpApiClient;
 
@@ -42,6 +45,33 @@ public class NbpApiServiceImpl implements NbpApiService {
             startDate = calendar.getTime();
         }
 
-        return nbpApiClient.getCurrencyPrices(currencyCode, startDate, endDate);
+        long diffInMsec = Math.abs(startDate.getTime() - endDate.getTime());
+        long dateDiff = TimeUnit.DAYS.convert(diffInMsec, TimeUnit.MILLISECONDS);
+        if (dateDiff <= MAX_DAYS_RANGE) {
+            return nbpApiClient.getCurrencyPrices(currencyCode, startDate, endDate);
+        }
+        else {
+            CurrencyRates currencyRates = null;
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(startDate);
+            while (calendar.getTime().before(endDate)) {
+                diffInMsec = Math.abs(startDate.getTime() - endDate.getTime());
+                dateDiff = TimeUnit.DAYS.convert(diffInMsec, TimeUnit.MILLISECONDS);
+                calendar.add(Calendar.DATE, Math.min(MAX_DAYS_RANGE - 1, (int)dateDiff));
+
+                CurrencyRates response = nbpApiClient.getCurrencyPrices(currencyCode, startDate, calendar.getTime());
+                if (currencyRates == null) {
+                    currencyRates = response;
+                }
+                else {
+                    currencyRates.addRates(response.getRates());
+                }
+
+                calendar.add(Calendar.DATE, 1);
+                startDate = calendar.getTime();
+            }
+            return currencyRates;
+        }
     }
 }
