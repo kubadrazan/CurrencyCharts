@@ -20,11 +20,6 @@ public class CurrencyController {
         this.nbpApiService = nbpApiService;
     }
 
-    @GetMapping("/hello")
-    public String hello() {
-        return "Full Stack Java Development with Spring Boot & Vue.js";
-    }
-
     @GetMapping("/all")
     public ResponseEntity<List<CurrencyBean>> getAllCurrencies() {
 
@@ -32,7 +27,7 @@ public class CurrencyController {
     }
 
     @GetMapping("/{code}")
-    public ResponseEntity<CurrencyRates> getAllCurrencies(
+    public ResponseEntity<CurrencyRates> getCurrencyPrice(
             @PathVariable
             String code,
             @RequestParam(name = "startDate", required = false)
@@ -42,6 +37,24 @@ public class CurrencyController {
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
             Date endDate) {
 
-        return ResponseEntity.ok(nbpApiService.getCurrencyPrices(code, startDate, endDate));
+        return ResponseEntity.ok(nbpApiService.getCurrencyPrice(code, startDate, endDate));
     }
+
+    @GetMapping("/{code}/ma")
+    public ResponseEntity<CurrencyRates> getCurrencyMovingAverage(
+            @PathVariable
+            String code,
+            @RequestParam(name = "startDate", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            Date startDate,
+            @RequestParam(name ="endDate", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            Date endDate,
+            @RequestParam(name = "windowSize", required = false, defaultValue = "5")
+            int windowSize) {
+
+        return ResponseEntity.ok(nbpApiService.getCurrencyMovingAverage(code, startDate, endDate, windowSize));
+    }
+
+
 }

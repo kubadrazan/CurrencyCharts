@@ -11,8 +11,14 @@ public interface NbpApiService {
 
     List<CurrencyBean> getAllCurrencies();
 
-    CurrencyRates getCurrencyPrices(String currencyCode,
+    CurrencyRates getCurrencyPrice(String currencyCode,
+                                   @Nullable Date startDate,
+                                   @Nullable Date endDate);
+
+
+    CurrencyRates getCurrencyMovingAverage(String currencyCode,
                                     @Nullable Date startDate,
-                                    @Nullable Date endDate);
+                                    @Nullable Date endDate,
+                                           int windowSize);
 
 }
