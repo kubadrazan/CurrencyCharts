@@ -21,6 +21,12 @@ import CurrencyService from "../services/CurrencyService";
 import type Currency from "src/interfaces/Currency";
 
 export default {
+  props: {
+    modelValue: {
+      type: Array,
+      required: true,
+    },
+  },
   data() {
     return {
       count: 0,
@@ -50,11 +56,13 @@ export default {
     selectItem(item: Currency) {
       this.isOpen = false;
       this.currencies.push(item);
+      this.$emit('update:modelValue', this.currencies);
       this.count++;
       this.options = this.options.filter(option => option !== item);
     },
     removeFromCurrecyList(deletedItem: Currency) {
       this.currencies = this.currencies.filter(item => item !== deletedItem);
+      this.$emit('update:modelValue', this.currencies);
       this.options.push(deletedItem);
       this.count--;
     },
@@ -67,6 +75,14 @@ export default {
           { code: 'EUR', currency: 'Euro' },
           { code: 'USD', currency: 'US Dollar' },
           { code: 'GBP', currency: 'British Pound' },
+          { code: 'JPY', currency: 'Japanese Yen' },
+          { code: 'AUD', currency: 'Australian Dollar' },
+          { code: 'CAD', currency: 'Canadian Dollar' },
+          { code: 'CHF', currency: 'Swiss Franc' },
+          { code: 'CNY', currency: 'Chinese Yuan' },
+          { code: 'INR', currency: 'Indian Rupee' },
+          { code: 'MXN', currency: 'Mexican Peso' }
+
         ];
         console.error("Failed to fetch currencies", error);
       }

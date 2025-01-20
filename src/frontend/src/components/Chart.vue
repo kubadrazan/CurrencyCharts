@@ -3,6 +3,7 @@
 </template>
 
 <script lang="ts">
+import CurrencyService from "../services/CurrencyService";
 import { Line } from 'vue-chartjs'
 import {
   Chart as ChartJS,
@@ -14,6 +15,7 @@ import {
   Tooltip,
   Legend
 } from 'chart.js'
+import type Currency from "src/interfaces/Currency";
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -24,6 +26,21 @@ ChartJS.register(
   Legend
 )
 export default {
+  props: {
+    currencies: {
+      type: Array as () => Currency[],
+      required: true,
+    },
+  },
+  watch: {
+    currencies: {
+      immediate: true,
+      deep: true,
+      handler(newVal) {
+        console.log('Updated currencies:', newVal);
+      },
+    },
+  },
   name: 'LineChart',
   components: { LineChartComponent: Line },
   data() {
@@ -47,12 +64,21 @@ export default {
     }
   },
   methods: {
-    //AddCurrencyToChart(currency, baseCurrency) {
-      // ApiDataService.getRates(currency, baseCurrency).then(data => {
-      //   this.chartData.labels.push(currency)
-      //   this.chartData.datasets[0].data.push(data)
-      // })
-    //}
+    async AddCurrencyToChart(currency:Currency, baseCurrency:Currency) {
+      try {
+        const currencyService = new CurrencyService();
+        const rates = await currencyService.getExchangeRates(baseCurrency, currency);
+        var dataset = {
+          label: currency.code,
+          backgroundColor: 'white',
+          borderColor: '#FF5733',
+          data: rates
+        }
+        this.data.datasets.push(dataset);
+      } catch (error) {
+        console.error("Failed to fetch currencies", error);
+      }
+    }
   }
 }
 </script>
