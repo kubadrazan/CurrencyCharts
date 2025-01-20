@@ -1,5 +1,6 @@
 package pl.edu.pw.mini.zpoif.currencychartsfullstack.services;
 
+import jakarta.annotation.Nullable;
 import pl.edu.pw.mini.zpoif.currencychartsfullstack.domain.CurrencyBean;
 import pl.edu.pw.mini.zpoif.currencychartsfullstack.domain.CurrencyRates;
 
@@ -10,6 +11,8 @@ public interface NbpApiService {
 
     List<CurrencyBean> getAllCurrencies();
 
-    CurrencyRates getCurrencyPrices(String currencyCode, Date startDate, Date endDate);
+    CurrencyRates getCurrencyPrices(String currencyCode,
+                                    @Nullable Date startDate,
+                                    @Nullable Date endDate);
 
 }
