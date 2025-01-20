@@ -2,11 +2,13 @@ package pl.edu.pw.mini.zpoif.currencychartsfullstack.services.impl;
 
 import jakarta.annotation.Nullable;
 import org.springframework.stereotype.Service;
+import pl.edu.pw.mini.zpoif.currencychartsfullstack.calculators.MovingAverageCalculator;
 import pl.edu.pw.mini.zpoif.currencychartsfullstack.domain.CurrencyBean;
 import pl.edu.pw.mini.zpoif.currencychartsfullstack.domain.CurrencyRates;
 import pl.edu.pw.mini.zpoif.currencychartsfullstack.services.NbpApiClient;
 import pl.edu.pw.mini.zpoif.currencychartsfullstack.services.NbpApiService;
 
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -29,9 +31,9 @@ public class NbpApiServiceImpl implements NbpApiService {
     }
 
     @Override
-    public CurrencyRates getCurrencyPrices(String currencyCode,
-                                           @Nullable Date startDate,
-                                           @Nullable Date endDate) {
+    public CurrencyRates getCurrencyPrice(String currencyCode,
+                                          @Nullable Date startDate,
+                                          @Nullable Date endDate) {
         // Default values for dates
         if (endDate == null) {
             endDate = Calendar.getInstance().getTime();
@@ -73,5 +75,19 @@ public class NbpApiServiceImpl implements NbpApiService {
             }
             return currencyRates;
         }
+    }
+
+    @Override
+    public CurrencyRates getCurrencyMovingAverage(String currencyCode,
+                                                  @Nullable Date startDate,
+                                                  @Nullable Date endDate,
+                                                  int windowSize) {
+        CurrencyRates currencyRates = getCurrencyPrice(currencyCode, startDate, endDate);
+        MovingAverageCalculator<BigDecimal> movingAverageCalculator = new MovingAverageCalculator<>(windowSize);
+        currencyRates.getRates().forEach(currencyBean -> {
+            movingAverageCalculator.add(currencyBean.getPrice());
+            currencyBean.setPrice(new BigDecimal(movingAverageCalculator.getMovingAverage()));
+        });
+        return currencyRates;
     }
 }
