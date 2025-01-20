@@ -35,14 +35,14 @@ export default {
           {
             label: 'Data One',
             backgroundColor: 'white',
-            borderColor: '#FF5733',  
+            borderColor: '#FF5733',
             data: [40, 39, 10, 40, 39, 80, 40]
           }
         ]
       },
       options: {
         responsive: true,
-        maintainAspectRatio: false,
+        maintainAspectRatio: true,
       }
     }
   },
