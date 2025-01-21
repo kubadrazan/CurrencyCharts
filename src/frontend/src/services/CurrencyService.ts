@@ -1,6 +1,7 @@
 import ApiService from "./ApiService";
 import type Currency from "../interfaces/Currency"
 import CurrencyRates from "src/interfaces/CurrencyRates";
+import { createCurrency } from "../interfaces/Currency"
 class CurrencyService extends ApiService
 {
   constructor()
@@ -8,7 +9,8 @@ class CurrencyService extends ApiService
     super("/api");
   }
   async getCurrencies(): Promise<Currency[]> {
-    return this.get<Currency[]>("/currencies/all");
+    const rawData = await this.get<any[]>("/currencies/all");
+    return rawData.map(item => createCurrency(item.code, item.currency));
   }
 
   async getCurrencyRates(code: string, startDate?: string, endDate?: string): Promise<CurrencyRates> {
@@ -22,16 +24,14 @@ class CurrencyService extends ApiService
       searchParams.append("endDate", endDate);
     }
 
-    // Construct the base URL
     let baseUrl = `/currencies/${code}`;
 
-    // Attach search parameters to the base URL
     baseUrl += '?' + searchParams.toString();
 
     return this.get<CurrencyRates>(baseUrl.toString());
   }
 
-  async getCurrencyMovingAverage(code: string, startDate?: Date, endDate?: Date, windowSize?: Number): Promise<CurrencyRates> {
+  async getCurrencyMovingAverage(code: string, startDate?: string, endDate?: string, windowSize?: Number): Promise<CurrencyRates> {
     const searchParams: Record<string, any> = new URLSearchParams();
 
     if (!!startDate) {
@@ -46,11 +46,9 @@ class CurrencyService extends ApiService
       searchParams.append("windowSize", windowSize);
     }
 
-    // Construct the base URL
-    const baseUrl = new URL(`/currencies/${code}/ma`);
+    let baseUrl = `/currencies/${code}`;
 
-    // Attach search parameters to the base URL
-    baseUrl.search = searchParams.toString();
+    baseUrl += '?' + searchParams.toString();
 
     return this.get<CurrencyRates>(baseUrl.toString());
   }

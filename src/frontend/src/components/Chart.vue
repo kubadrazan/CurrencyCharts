@@ -1,31 +1,15 @@
 <template>
-  <LineChartComponent  ref="chart" id="Chart" :options="options" :data="data" >Chart couldn't be loaded xD</LineChartComponent>
+  <div id="chart">
+    <apexchart type="line" height="350" :options="chartOptions" :series="series"></apexchart>
+  </div>
 </template>
 
 <script lang="ts">
 import CurrencyService from "../services/CurrencyService";
-import { Line } from 'vue-chartjs'
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend, ChartData, ChartDataset
-} from 'chart.js'
 import type Currency from "src/interfaces/Currency";
-import {ComponentPublicInstance} from "vue";
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-)
+import VueApexCharts from "vue3-apexcharts";
+import CurrencyRates from "src/interfaces/CurrencyRates";
+
 export default {
   props: {
     currencies: {
@@ -48,50 +32,105 @@ export default {
       deep: true,
       handler(newVal) {
         this.addCurrencyToChart(newVal, this.baseModelValue)
+        this.addIndicatorToChart(newVal, this.baseModelValue)
         console.log('Updated currencies:', newVal);
       },
     },
   },
-  name: 'LineChart',
-  components: { LineChartComponent: Line },
+  components: {apexchart: VueApexCharts,},
   data() {
     return {
-      //baseCurrency: 'PLN',
-      data: {
-        labels: [] as string[] ,//['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-        datasets: []  as ChartDataset<'line'>[],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
+      currencyService: new CurrencyService(),
+      series: [{
+        name: "",
+        type: "",
+        data: [] as Number[],
+      }],
+      chartOptions: {
+        chart: {
+          height: 600,
+          width: 800,
+          type: 'area',
+          zoom: {
+            autoScaleYaxis: true
+          }
+        },
+        dataLabels: {
+          enabled: false
+        },
+        stroke: {
+          curve: 'smooth',
+          width: 2
+        },
+        title: {
+          text: 'Exchange Rates',
+          align: 'left'
+        },
+        grid: {
+          row: {
+            colors: ['#f3f3f3', 'transparent'],
+            opacity: 0.5
+          },
+        },
+        xaxis: {
+          hideOverlappingLabels: true,
+          type: 'datetime',
+        },
+
+        fill: {
+          type: 'gradient',
+          gradient: {
+            shadeIntensity: 1,
+            inverseColors: false,
+            opacityFrom: 0.7,
+            opacityTo: 0,
+            stops: [0, 90, 100],
+            type: 'vertical'
+          },
+        },
+        labels: [] as Date[],
       }
     }
   },
   methods: {
     async addCurrencyToChart(currencies:Currency[], baseCurrency:Currency) {
       try {
-        const currencyService = new CurrencyService();
-        this.data.datasets = [];
+        this.series = [];
+        let result: CurrencyRates | null = null;
         for (const currency of currencies) {
-          const result = await currencyService.getCurrencyRates(currency.code, this.dateRange.from, this.dateRange.to);
-          const dataset = {
-            label: currency.code,
-            backgroundColor: 'white',
-            borderColor: '#FF5733',
+          result = await this.currencyService.getCurrencyRates(currency.code, this.dateRange.from, this.dateRange.to);
+          const serie = {
+            name: currency.code,
+            type: "area",
             data: result.rates.map(rate => rate.mid)
           }
-          this.data.datasets = [...this.data.datasets, dataset];
-          this.data.labels = result.rates.map(rate => rate.effectiveDate.toString()).filter((date): date is string => date !== undefined);
+          this.series = [...this.series, serie];
         }
-        this.data.datasets = [];
-        const dataset = {
-          label: 'AAAAAAAAAAA',
-          backgroundColor: 'white',
-          borderColor: '#FF5733',
-          data: [40, 39, 10, 40, 39, 80, 40]
+        this.chartOptions = result !== null ? {
+          ...this.chartOptions,
+          labels: result.rates.map(rate => rate.effectiveDate),
+        } :  this.chartOptions;
+
+    } catch (error) {
+        console.error("Failed to fetch currencies", error);
+      }
+    },
+    async addIndicatorToChart(currencies:Currency[], baseCurrency:Currency) {
+      try {
+        this.series = [];
+        for (const currency of currencies) {
+          {
+            if (currency.group.includes("ma")) {
+              const result = await this.currencyService.getCurrencyMovingAverage(currency.code, this.dateRange.from, this.dateRange.to, 10);
+              const serie = {
+                name: "Moving Average: " + currency.code,
+                type: "line",
+                data: result.rates.map(rate => rate.mid)
+              }
+              this.series = [...this.series, serie];
+            }
+          }
         }
-        this.data.datasets = [...this.data.datasets, dataset];
-        this.data.labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
     } catch (error) {
         console.error("Failed to fetch currencies", error);
       }
