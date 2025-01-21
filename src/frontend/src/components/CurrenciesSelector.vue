@@ -4,7 +4,7 @@
   </div>
   <div class="currencies_selection">
       <q-chip square v-for="(currency, index) in currencies" :key="index" :size="chipSize"
-              removable @remove="removeFromCurrencyList(currency)" >
+              removable @remove="removeFromCurrencyList(currency)" >{{currency.code}}
       </q-chip>
         <q-select v-if="count < 5"
       filled color="purple-12" v-model="selectedItem" @update:modelValue="selectItem()" :options="options" label="Select a currency" option-label="currency" option-value="code" display-value="Select Currency"></q-select>
