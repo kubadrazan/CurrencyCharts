@@ -5,7 +5,6 @@
   <div class="currencies_selection">
       <q-chip square v-for="(currency, index) in currencies" :key="index" :size="chipSize"
               removable @remove="removeFromCurrencyList(currency)" >
-        {{ currency.code }}
       </q-chip>
         <q-select v-if="count < 5"
       filled color="purple-12" v-model="selectedItem" @update:modelValue="selectItem()" :options="options" label="Select a currency" option-label="currency" option-value="code" display-value="Select Currency"></q-select>
@@ -55,7 +54,7 @@ export default {
     selectBaseCurrency() {
       if(this.baseCurrency.code != "") {
         if(this.baseModelValue.code != ""){
-          this.options.push(this.baseModelValue);
+          this.options.push({...this.baseModelValue}); // TODO: Fix value not being pushed into array
         }
         this.$emit('update:baseModelValue', this.baseCurrency);
         this.options = this.options.filter(option => option !== this.baseCurrency);
