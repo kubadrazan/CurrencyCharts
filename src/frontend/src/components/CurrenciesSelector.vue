@@ -54,7 +54,7 @@ export default {
     selectBaseCurrency() {
       if(this.baseCurrency.code != "") {
         if(this.baseModelValue.code != ""){
-          this.options.push({...this.baseModelValue}); // TODO: Fix value not being pushed into array
+          this.options.push({...this.baseModelValue});
         }
         this.$emit('update:baseModelValue', this.baseCurrency);
         this.options = this.options.filter(option => option !== this.baseCurrency);
