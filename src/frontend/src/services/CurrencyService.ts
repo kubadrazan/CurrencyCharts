@@ -15,11 +15,11 @@ class CurrencyService extends ApiService
     const searchParams: Record<string, any> = new URLSearchParams();
 
     if (!!startDate) {
-      searchParams.append("startDate", startDate);
+      searchParams.append("startDate", startDate.toISOString().split('T')[0]);
     }
 
     if (!!endDate) {
-      searchParams.append("endDate", endDate);
+      searchParams.append("endDate", endDate.toISOString().split('T')[0]);
     }
 
     // Construct the base URL
@@ -35,11 +35,11 @@ class CurrencyService extends ApiService
     const searchParams: Record<string, any> = new URLSearchParams();
 
     if (!!startDate) {
-      searchParams.append("startDate", startDate);
+      searchParams.append("startDate", startDate.toISOString().split('T')[0]);
     }
 
     if (!!endDate) {
-      searchParams.append("endDate", endDate);
+      searchParams.append("endDate", endDate.toISOString().split('T')[0]);
     }
 
     if (!!windowSize) {
