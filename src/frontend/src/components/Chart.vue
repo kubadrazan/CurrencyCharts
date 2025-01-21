@@ -31,6 +31,10 @@ export default {
       type: Array as () => Currency[],
       required: true,
     },
+    baseModelValue: {
+      type: Object as () => Currency,
+      required: true,
+    },
   },
   watch: {
     currencies: {
@@ -45,7 +49,7 @@ export default {
   components: { LineChartComponent: Line },
   data() {
     return {
-      baseCurrency: 'PLN',
+      //baseCurrency: 'PLN',
       data: {
         labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
         datasets: [
