@@ -1,5 +1,5 @@
 <template>
-  <LineChartComponent id="my-chart-id" :options="options" :data="data" />
+  <LineChartComponent  ref="chart" id="Chart" :options="options" :data="data" >Chart couldn't be loaded xD</LineChartComponent>
 </template>
 
 <script lang="ts">
@@ -13,9 +13,10 @@ import {
   LineElement,
   Title,
   Tooltip,
-  Legend, ChartData
+  Legend, ChartData, ChartDataset
 } from 'chart.js'
 import type Currency from "src/interfaces/Currency";
+import {ComponentPublicInstance} from "vue";
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -36,7 +37,7 @@ export default {
       required: true,
     },
     dateRange: {
-      type: Object as () =>{from:Date, to:Date},
+      type: Object as () =>{ from: string, to: string },
       required: true,
     },
 
@@ -57,12 +58,12 @@ export default {
     return {
       //baseCurrency: 'PLN',
       data: {
-        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-        datasets: [] as ChartData<'line'>['datasets']
+        labels: [] as string[] ,//['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+        datasets: []  as ChartDataset<'line'>[],
       },
       options: {
         responsive: true,
-        maintainAspectRatio: true,
+        maintainAspectRatio: false,
       }
     }
   },
@@ -70,17 +71,28 @@ export default {
     async addCurrencyToChart(currencies:Currency[], baseCurrency:Currency) {
       try {
         const currencyService = new CurrencyService();
+        this.data.datasets = [];
         for (const currency of currencies) {
-          const rates = await currencyService.getExchangeRates(baseCurrency, currency, this.dateRange.from, this.dateRange.to);
+          const result = await currencyService.getCurrencyRates(currency.code, this.dateRange.from, this.dateRange.to);
           const dataset = {
             label: currency.code,
             backgroundColor: 'white',
             borderColor: '#FF5733',
-            data: rates
+            data: result.rates.map(rate => rate.mid)
           }
-          this.data.datasets.push(dataset);
+          this.data.datasets = [...this.data.datasets, dataset];
+          this.data.labels = result.rates.map(rate => rate.effectiveDate.toString()).filter((date): date is string => date !== undefined);
         }
-      } catch (error) {
+        this.data.datasets = [];
+        const dataset = {
+          label: 'AAAAAAAAAAA',
+          backgroundColor: 'white',
+          borderColor: '#FF5733',
+          data: [40, 39, 10, 40, 39, 80, 40]
+        }
+        this.data.datasets = [...this.data.datasets, dataset];
+        this.data.labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
+    } catch (error) {
         console.error("Failed to fetch currencies", error);
       }
     }

@@ -11,22 +11,22 @@ class CurrencyService extends ApiService
     return this.get<Currency[]>("/currencies/all");
   }
 
-  async getCurrencyRates(code: string, startDate?: Date, endDate?: Date): Promise<CurrencyRates> {
+  async getCurrencyRates(code: string, startDate?: string, endDate?: string): Promise<CurrencyRates> {
     const searchParams: Record<string, any> = new URLSearchParams();
 
     if (!!startDate) {
-      searchParams.append("startDate", startDate.toISOString().split('T')[0]);
+      searchParams.append("startDate", startDate);
     }
 
     if (!!endDate) {
-      searchParams.append("endDate", endDate.toISOString().split('T')[0]);
+      searchParams.append("endDate", endDate);
     }
 
     // Construct the base URL
-    const baseUrl = new URL(`/currencies/${code}`);
+    let baseUrl = `/currencies/${code}`;
 
     // Attach search parameters to the base URL
-    baseUrl.search = searchParams.toString();
+    baseUrl += '?' + searchParams.toString();
 
     return this.get<CurrencyRates>(baseUrl.toString());
   }
@@ -35,11 +35,11 @@ class CurrencyService extends ApiService
     const searchParams: Record<string, any> = new URLSearchParams();
 
     if (!!startDate) {
-      searchParams.append("startDate", startDate.toISOString().split('T')[0]);
+      searchParams.append("startDate", startDate);
     }
 
     if (!!endDate) {
-      searchParams.append("endDate", endDate.toISOString().split('T')[0]);
+      searchParams.append("endDate", endDate);
     }
 
     if (!!windowSize) {

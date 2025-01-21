@@ -1,7 +1,7 @@
 <template>
   <q-page class="row items-center justify-evenly">
     <CurrenciesSelector v-model="currencies" v-model:base-model-value="baseCurrency"/>
-    <q-date v-model="dataRange" range />
+    <q-date v-model="dateRange" range mask="YYYY-MM-DD"/>
     <Chart :currencies="currencies" :base-model-value="baseCurrency" :dateRange="dateRange"/>
   </q-page>
 </template>
@@ -14,5 +14,5 @@ import type Currency from "src/interfaces/Currency";
 
 const currencies = ref<Currency[]>([]);
 const baseCurrency = ref<Currency>({ code: "", currency: "" });
-let dataRange = ref<{from:Date, to:Date}>({ from: new Date(), to: new Date() })
+let dateRange =  ref({ from: '2020-07-08', to: '2020-07-17' });
 </script>
