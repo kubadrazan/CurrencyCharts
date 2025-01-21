@@ -13,7 +13,7 @@ import {
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend, ChartData
 } from 'chart.js'
 import type Currency from "src/interfaces/Currency";
 ChartJS.register(
@@ -31,12 +31,22 @@ export default {
       type: Array as () => Currency[],
       required: true,
     },
+    baseModelValue: {
+      type: Object as () => Currency,
+      required: true,
+    },
+    dateRange: {
+      type: Object as () =>{from:Date, to:Date},
+      required: true,
+    },
+
   },
   watch: {
     currencies: {
       immediate: true,
       deep: true,
       handler(newVal) {
+        this.addCurrencyToChart(newVal, this.baseModelValue)
         console.log('Updated currencies:', newVal);
       },
     },
@@ -45,17 +55,10 @@ export default {
   components: { LineChartComponent: Line },
   data() {
     return {
-      baseCurrency: 'PLN',
+      //baseCurrency: 'PLN',
       data: {
         labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-        datasets: [
-          {
-            label: 'Data One',
-            backgroundColor: 'white',
-            borderColor: '#FF5733',
-            data: [40, 39, 10, 40, 39, 80, 40]
-          }
-        ]
+        datasets: [] as ChartData<'line'>['datasets']
       },
       options: {
         responsive: true,
@@ -64,17 +67,19 @@ export default {
     }
   },
   methods: {
-    async AddCurrencyToChart(currency:Currency, baseCurrency:Currency) {
+    async addCurrencyToChart(currencies:Currency[], baseCurrency:Currency) {
       try {
         const currencyService = new CurrencyService();
-        const rates = await currencyService.getExchangeRates(baseCurrency, currency);
-        var dataset = {
-          label: currency.code,
-          backgroundColor: 'white',
-          borderColor: '#FF5733',
-          data: rates
+        for (const currency of currencies) {
+          const rates = await currencyService.getExchangeRates(baseCurrency, currency, this.dateRange.from, this.dateRange.to);
+          const dataset = {
+            label: currency.code,
+            backgroundColor: 'white',
+            borderColor: '#FF5733',
+            data: rates
+          }
+          this.data.datasets.push(dataset);
         }
-        this.data.datasets.push(dataset);
       } catch (error) {
         console.error("Failed to fetch currencies", error);
       }
