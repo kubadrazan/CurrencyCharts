@@ -35,14 +35,11 @@ export default {
       type: Object as () => Currency,
       required: true,
     },
-    beginDate: {
-      type: Object as () => Date,
+    dateRange: {
+      type: Object as () =>{from:Date, to:Date},
       required: true,
     },
-    endDate: {
-      type: Object as () => Date,
-      required: true,
-    },
+
   },
   watch: {
     currencies: {
@@ -74,7 +71,7 @@ export default {
       try {
         const currencyService = new CurrencyService();
         for (const currency of currencies) {
-          const rates = await currencyService.getExchangeRates(baseCurrency, currency, this.beginDate, this.endDate);
+          const rates = await currencyService.getExchangeRates(baseCurrency, currency, this.dateRange.from, this.dateRange.to);
           const dataset = {
             label: currency.code,
             backgroundColor: 'white',
