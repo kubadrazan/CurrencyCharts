@@ -11,7 +11,7 @@ class CurrencyService extends ApiService
     return this.get<Currency[]>("/currencies/all");
   }
 
-  async getCurrencyRates(code: string, startDate: Date, endDate: Date): Promise<CurrencyRates> {
+  async getCurrencyRates(code: string, startDate?: Date, endDate?: Date): Promise<CurrencyRates> {
     const searchParams: Record<string, any> = new URLSearchParams();
 
     if (!!startDate) {
