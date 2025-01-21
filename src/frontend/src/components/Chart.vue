@@ -13,7 +13,7 @@ import {
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend, ChartData
 } from 'chart.js'
 import type Currency from "src/interfaces/Currency";
 ChartJS.register(
@@ -35,12 +35,21 @@ export default {
       type: Object as () => Currency,
       required: true,
     },
+    beginDate: {
+      type: Object as () => Date,
+      required: true,
+    },
+    endDate: {
+      type: Object as () => Date,
+      required: true,
+    },
   },
   watch: {
     currencies: {
       immediate: true,
       deep: true,
       handler(newVal) {
+        this.addCurrencyToChart(newVal, this.baseModelValue)
         console.log('Updated currencies:', newVal);
       },
     },
@@ -52,14 +61,7 @@ export default {
       //baseCurrency: 'PLN',
       data: {
         labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-        datasets: [
-          {
-            label: 'Data One',
-            backgroundColor: 'white',
-            borderColor: '#FF5733',
-            data: [40, 39, 10, 40, 39, 80, 40]
-          }
-        ]
+        datasets: [] as ChartData<'line'>['datasets']
       },
       options: {
         responsive: true,
@@ -68,17 +70,19 @@ export default {
     }
   },
   methods: {
-    async AddCurrencyToChart(currency:Currency, baseCurrency:Currency) {
+    async addCurrencyToChart(currencies:Currency[], baseCurrency:Currency) {
       try {
         const currencyService = new CurrencyService();
-        const rates = await currencyService.getExchangeRates(baseCurrency, currency);
-        var dataset = {
-          label: currency.code,
-          backgroundColor: 'white',
-          borderColor: '#FF5733',
-          data: rates
+        for (const currency of currencies) {
+          const rates = await currencyService.getExchangeRates(baseCurrency, currency, this.beginDate, this.endDate);
+          const dataset = {
+            label: currency.code,
+            backgroundColor: 'white',
+            borderColor: '#FF5733',
+            data: rates
+          }
+          this.data.datasets.push(dataset);
         }
-        this.data.datasets.push(dataset);
       } catch (error) {
         console.error("Failed to fetch currencies", error);
       }
