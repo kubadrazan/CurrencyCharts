@@ -12,16 +12,47 @@ class CurrencyService extends ApiService
   }
 
   async getCurrencyRates(code: string, startDate: Date, endDate: Date): Promise<CurrencyRates> {
-    return this.get<CurrencyRates>("/currencies/" + code +
-      "?startDate=" + startDate.toISOString() +
-      "&endDate=" + endDate.toISOString());
+    const searchParams: Record<string, any> = new URLSearchParams();
+
+    if (!!startDate) {
+      searchParams.append("startDate", startDate);
+    }
+
+    if (!!endDate) {
+      searchParams.append("endDate", endDate);
+    }
+
+    // Construct the base URL
+    const baseUrl = new URL(`/currencies/${code}`);
+
+    // Attach search parameters to the base URL
+    baseUrl.search = searchParams.toString();
+
+    return this.get<CurrencyRates>(baseUrl.toString());
   }
 
-  async getCurrencyMovingAverage(code: string, startDate: Date, endDate: Date, windowSize: Number): Promise<CurrencyRates> {
-    return this.get<CurrencyRates>("/currencies/" + code + "/ma" +
-      "?startDate=" + startDate.toISOString() +
-      "&endDate=" + endDate.toISOString() +
-      "&windowSize=" + windowSize);
+  async getCurrencyMovingAverage(code: string, startDate?: Date, endDate?: Date, windowSize?: Number): Promise<CurrencyRates> {
+    const searchParams: Record<string, any> = new URLSearchParams();
+
+    if (!!startDate) {
+      searchParams.append("startDate", startDate);
+    }
+
+    if (!!endDate) {
+      searchParams.append("endDate", endDate);
+    }
+
+    if (!!windowSize) {
+      searchParams.append("windowSize", windowSize);
+    }
+
+    // Construct the base URL
+    const baseUrl = new URL(`/currencies/${code}/ma`);
+
+    // Attach search parameters to the base URL
+    baseUrl.search = searchParams.toString();
+
+    return this.get<CurrencyRates>(baseUrl.toString());
   }
 }
 export default CurrencyService
