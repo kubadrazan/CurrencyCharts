@@ -6,6 +6,7 @@ import pl.edu.pw.mini.zpoif.currencychartsfullstack.calculators.ExponentialMovin
 import pl.edu.pw.mini.zpoif.currencychartsfullstack.calculators.MovingAverageCalculator;
 import pl.edu.pw.mini.zpoif.currencychartsfullstack.domain.CurrencyBean;
 import pl.edu.pw.mini.zpoif.currencychartsfullstack.domain.CurrencyRates;
+import pl.edu.pw.mini.zpoif.currencychartsfullstack.excpetions.NbpApiClientException;
 import pl.edu.pw.mini.zpoif.currencychartsfullstack.services.NbpApiClient;
 import pl.edu.pw.mini.zpoif.currencychartsfullstack.services.NbpApiService;
 
@@ -18,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class NbpApiServiceImpl implements NbpApiService {
 
-    private final int MAX_DAYS_RANGE = 367;
+    private final int API_MAX_DAYS_RANGE = 367;
 
     private final NbpApiClient nbpApiClient;
 
@@ -50,7 +51,7 @@ public class NbpApiServiceImpl implements NbpApiService {
 
         long diffInMsec = Math.abs(startDate.getTime() - endDate.getTime());
         long dateDiff = TimeUnit.DAYS.convert(diffInMsec, TimeUnit.MILLISECONDS);
-        if (dateDiff <= MAX_DAYS_RANGE) {
+        if (dateDiff <= API_MAX_DAYS_RANGE) {
             return nbpApiClient.getCurrencyPrices(currencyCode, startDate, endDate);
         }
         else {
@@ -61,7 +62,7 @@ public class NbpApiServiceImpl implements NbpApiService {
             while (calendar.getTime().before(endDate)) {
                 diffInMsec = Math.abs(startDate.getTime() - endDate.getTime());
                 dateDiff = TimeUnit.DAYS.convert(diffInMsec, TimeUnit.MILLISECONDS);
-                calendar.add(Calendar.DATE, Math.min(MAX_DAYS_RANGE - 1, (int)dateDiff));
+                calendar.add(Calendar.DATE, Math.min(API_MAX_DAYS_RANGE - 1, (int)dateDiff));
 
                 CurrencyRates response = nbpApiClient.getCurrencyPrices(currencyCode, startDate, calendar.getTime());
                 if (currencyRates == null) {

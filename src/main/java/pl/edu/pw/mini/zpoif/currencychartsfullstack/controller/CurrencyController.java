@@ -7,12 +7,15 @@ import pl.edu.pw.mini.zpoif.currencychartsfullstack.domain.CurrencyBean;
 import pl.edu.pw.mini.zpoif.currencychartsfullstack.domain.CurrencyRates;
 import pl.edu.pw.mini.zpoif.currencychartsfullstack.services.NbpApiService;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/currencies")
 public class CurrencyController {
+
+    private final Date MIN_DATE = new Date(2002, Calendar.JANUARY, 2);
 
     private final NbpApiService nbpApiService;
 
@@ -21,13 +24,13 @@ public class CurrencyController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<CurrencyBean>> getAllCurrencies() {
+    public ResponseEntity<?> getAllCurrencies() {
 
         return ResponseEntity.ok(nbpApiService.getAllCurrencies());
     }
 
     @GetMapping("/{code}")
-    public ResponseEntity<CurrencyRates> getCurrencyPrice(
+    public ResponseEntity<?> getCurrencyPrice(
             @PathVariable
             String code,
             @RequestParam(name = "startDate", required = false)
@@ -41,7 +44,7 @@ public class CurrencyController {
     }
 
     @GetMapping("/{code}/ma")
-    public ResponseEntity<CurrencyRates> getCurrencyMovingAverage(
+    public ResponseEntity<?> getCurrencyMovingAverage(
             @PathVariable
             String code,
             @RequestParam(name = "startDate", required = false)
@@ -53,11 +56,15 @@ public class CurrencyController {
             @RequestParam(name = "windowSize", required = false, defaultValue = "5")
             int windowSize) {
 
+        if (windowSize <= 0) {
+            return ResponseEntity.badRequest().body("400 BadRequest - windowSize must be greater than 0");
+        }
+
         return ResponseEntity.ok(nbpApiService.getCurrencyMovingAverage(code, startDate, endDate, windowSize));
     }
 
     @GetMapping("/{code}/ema")
-    public ResponseEntity<CurrencyRates> getCurrencyExponentialMovingAverage(
+    public ResponseEntity<?> getCurrencyExponentialMovingAverage(
             @PathVariable
             String code,
             @RequestParam(name = "startDate", required = false)
@@ -68,6 +75,10 @@ public class CurrencyController {
             Date endDate,
             @RequestParam(name = "alpha", required = false, defaultValue = "0.8")
             double alpha) {
+
+        if (alpha <= 0 || alpha > 1) {
+            return ResponseEntity.badRequest().body("400 BadRequest - Alpha must be in the range (0, 1]");
+        }
 
         return ResponseEntity.ok(nbpApiService.getCurrencyExponentialMovingAverage(code, startDate, endDate, alpha));
     }
