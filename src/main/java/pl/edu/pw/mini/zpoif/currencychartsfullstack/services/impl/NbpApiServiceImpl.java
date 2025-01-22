@@ -90,4 +90,12 @@ public class NbpApiServiceImpl implements NbpApiService {
         });
         return currencyRates;
     }
+
+    @Override
+    public CurrencyRates getCurrencyExponentialMovingAverage(String currencyCode,
+                                                             @Nullable Date startDate,
+                                                             @Nullable Date endDate,
+                                                             double alpha) {
+        return null;
+    }
 }
