@@ -4,7 +4,11 @@
   </div>
   <div class="currencies_selection">
       <q-chip square v-for="(currency, index) in currencies" :key="index" :size="chipSize"
-              removable @remove="removeFromCurrencyList(currency)" >{{currency.code}}
+              removable @remove="removeFromCurrencyList(currency)" >{{currency.code}} <q-option-group
+          :options="currency.options"
+          type="toggle"
+          v-model="currency.group"
+      />
       </q-chip>
         <q-select v-if="count < 5"
       filled color="purple-12" v-model="selectedItem" @update:modelValue="selectItem()" :options="options" label="Select a currency" option-label="currency" option-value="code" display-value="Select Currency"></q-select>
@@ -13,7 +17,7 @@
 
 <script lang="ts">
 import CurrencyService from "../services/CurrencyService";
-import type Currency from "src/interfaces/Currency";
+import Currency, {createCurrency} from "src/interfaces/Currency";
 
 export default {
   props: {
@@ -28,11 +32,11 @@ export default {
   },
   data() {
     return {
-      selectedItem: {code:"", currency:""} as Currency,
-      baseCurrency: {code:"", currency:""} as Currency,
+      selectedItem: createCurrency() as Currency,
+      baseCurrency: createCurrency() as Currency,
       count: 0,
-      options: [] as Currency[], // Use Currency[] for an array of Currency objects
-      currencies: [] as Currency[], // Use Currency[] for an array of Currency objects
+      options: [] as Currency[],
+      currencies: [] as Currency[],
     };
   },
   mounted() {
@@ -66,7 +70,7 @@ export default {
         this.$emit('update:modelValue', this.currencies);
         this.count++;
         this.options = this.options.filter(option => option !== this.selectedItem);
-        this.selectedItem = {code: "", currency: ""};
+        this.selectedItem = createCurrency();
       }
       },
     removeFromCurrencyList(deletedItem: Currency) {
@@ -94,7 +98,7 @@ export default {
   display: flex;
   gap: 1rem;
   margin-top: 10px;
-  position: relative; /* Add this line */
+  position: relative;
 }
 
 </style>
