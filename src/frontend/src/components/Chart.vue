@@ -16,10 +16,6 @@ export default {
       type: Array as () => Currency[],
       required: true,
     },
-    baseModelValue: {
-      type: Object as () => Currency,
-      required: true,
-    },
     dateRange: {
       type: Object as () =>{ from: string, to: string },
       required: true,
@@ -31,8 +27,8 @@ export default {
       immediate: true,
       deep: true,
       handler(newVal) {
-        this.addCurrencyToChart(newVal, this.baseModelValue)
-        this.addIndicatorToChart(newVal, this.baseModelValue)
+        this.addCurrencyToChart(newVal)
+        this.addIndicatorToChart(newVal)
         console.log('Updated currencies:', newVal);
       },
     },
@@ -93,7 +89,7 @@ export default {
     }
   },
   methods: {
-    async addCurrencyToChart(currencies:Currency[], baseCurrency:Currency) {
+    async addCurrencyToChart(currencies:Currency[]) {
       try {
         this.series = [];
         let result: CurrencyRates | null = null;
@@ -102,7 +98,7 @@ export default {
           const serie = {
             name: currency.code,
             type: "area",
-            data: result.rates.map(rate => rate.mid)
+            data: result.rates.map(rate => Number(rate.mid.toFixed(2)))
           }
           this.series = [...this.series, serie];
         }
@@ -115,7 +111,7 @@ export default {
         console.error("Failed to fetch currencies", error);
       }
     },
-    async addIndicatorToChart(currencies:Currency[], baseCurrency:Currency) {
+    async addIndicatorToChart(currencies:Currency[]) {
       try {
         this.series = [];
         for (const currency of currencies) {
@@ -125,7 +121,7 @@ export default {
               const serie = {
                 name: "Moving Average: " + currency.code,
                 type: "line",
-                data: result.rates.map(rate => rate.mid)
+                data: result.rates.map(rate => Number(rate.mid.toFixed(2)))
               }
               this.series = [...this.series, serie];
             }

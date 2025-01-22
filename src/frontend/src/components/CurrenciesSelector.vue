@@ -1,7 +1,4 @@
 <template>
-  <div>
-      <q-select filled color="purple-12" v-model="baseCurrency" @update:modelValue="selectBaseCurrency" :options="options" label="Select base currency" option-label="currency" option-value="code" ></q-select>
-  </div>
   <div class="currencies_selection">
       <q-chip square v-for="(currency, index) in currencies" :key="index" :size="chipSize"
               removable @remove="removeFromCurrencyList(currency)" >{{currency.code}} <q-option-group
@@ -25,15 +22,10 @@ export default {
       type: Array,
       required: true,
     },
-    baseModelValue: {
-      type: Object as () => Currency,
-      required: true,
-    },
   },
   data() {
     return {
       selectedItem: createCurrency() as Currency,
-      baseCurrency: createCurrency() as Currency,
       count: 0,
       options: [] as Currency[],
       currencies: [] as Currency[],
@@ -54,16 +46,6 @@ export default {
     },
   },
   methods: {
-
-    selectBaseCurrency() {
-      if(this.baseCurrency.code != "") {
-        if(this.baseModelValue.code != ""){
-          this.options.push({...this.baseModelValue});
-        }
-        this.$emit('update:baseModelValue', this.baseCurrency);
-        this.options = this.options.filter(option => option !== this.baseCurrency);
-      }
-      },
     selectItem() {
       if(this.selectedItem.code != "") {
         this.currencies.push(this.selectedItem);
