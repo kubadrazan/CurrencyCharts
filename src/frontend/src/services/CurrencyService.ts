@@ -46,7 +46,7 @@ class CurrencyService extends ApiService
       searchParams.append("windowSize", windowSize);
     }
 
-    let baseUrl = `/currencies/${code}`;
+    let baseUrl = `/currencies/${code}/ma`;
 
     baseUrl += '?' + searchParams.toString();
 
