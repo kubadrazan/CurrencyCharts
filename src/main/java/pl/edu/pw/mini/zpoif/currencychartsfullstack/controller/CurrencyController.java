@@ -56,5 +56,21 @@ public class CurrencyController {
         return ResponseEntity.ok(nbpApiService.getCurrencyMovingAverage(code, startDate, endDate, windowSize));
     }
 
+    @GetMapping("/{code}/ema")
+    public ResponseEntity<CurrencyRates> getCurrencyExponentialMovingAverage(
+            @PathVariable
+            String code,
+            @RequestParam(name = "startDate", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            Date startDate,
+            @RequestParam(name ="endDate", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            Date endDate,
+            @RequestParam(name = "alpha", required = false, defaultValue = "0.4")
+            double alpha) {
+
+        return ResponseEntity.ok(nbpApiService.getCurrencyExponentialMovingAverage(code, startDate, endDate, alpha));
+    }
+
 
 }
