@@ -5,7 +5,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.edu.pw.mini.zpoif.currencychartsfullstack.services.NbpApiService;
 
-import java.util.Calendar;
 import java.util.Date;
 
 @RestController
@@ -68,7 +67,7 @@ public class CurrencyController {
             @RequestParam(name ="endDate", required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
             Date endDate,
-            @RequestParam(name = "alpha", required = false, defaultValue = "0.8")
+            @RequestParam(name = "alpha", required = false, defaultValue = "0.4")
             double alpha) {
 
         if (alpha <= 0 || alpha > 1) {
