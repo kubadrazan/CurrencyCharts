@@ -21,4 +21,10 @@ public interface NbpApiService {
                                     @Nullable Date endDate,
                                            int windowSize);
 
+
+    CurrencyRates getCurrencyExponentialMovingAverage(String currencyCode,
+                                           @Nullable Date startDate,
+                                           @Nullable Date endDate,
+                                           double alpha);
+
 }

@@ -2,6 +2,7 @@ package pl.edu.pw.mini.zpoif.currencychartsfullstack.services.impl;
 
 import jakarta.annotation.Nullable;
 import org.springframework.stereotype.Service;
+import pl.edu.pw.mini.zpoif.currencychartsfullstack.calculators.ExponentialMovingAverageCalculator;
 import pl.edu.pw.mini.zpoif.currencychartsfullstack.calculators.MovingAverageCalculator;
 import pl.edu.pw.mini.zpoif.currencychartsfullstack.domain.CurrencyBean;
 import pl.edu.pw.mini.zpoif.currencychartsfullstack.domain.CurrencyRates;
@@ -86,7 +87,23 @@ public class NbpApiServiceImpl implements NbpApiService {
         MovingAverageCalculator<BigDecimal> movingAverageCalculator = new MovingAverageCalculator<>(windowSize);
         currencyRates.getRates().forEach(currencyBean -> {
             movingAverageCalculator.add(currencyBean.getPrice());
-            currencyBean.setPrice(new BigDecimal(movingAverageCalculator.getMovingAverage()));
+            double ma = movingAverageCalculator.getMovingAverage();
+            currencyBean.setPrice(new BigDecimal(ma));
+        });
+        return currencyRates;
+    }
+
+    @Override
+    public CurrencyRates getCurrencyExponentialMovingAverage(String currencyCode,
+                                                             @Nullable Date startDate,
+                                                             @Nullable Date endDate,
+                                                             double alpha) {
+        CurrencyRates currencyRates = getCurrencyPrice(currencyCode, startDate, endDate);
+        ExponentialMovingAverageCalculator<BigDecimal> emaCalculator =
+                new ExponentialMovingAverageCalculator<>(alpha);
+        currencyRates.getRates().forEach(currencyBean -> {
+            Double ema = emaCalculator.calculateEMA(currencyBean.getPrice());
+            currencyBean.setPrice(new BigDecimal(ema));
         });
         return currencyRates;
     }
