@@ -3,13 +3,10 @@ package pl.edu.pw.mini.zpoif.currencychartsfullstack.controller;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pl.edu.pw.mini.zpoif.currencychartsfullstack.domain.CurrencyBean;
-import pl.edu.pw.mini.zpoif.currencychartsfullstack.domain.CurrencyRates;
 import pl.edu.pw.mini.zpoif.currencychartsfullstack.services.NbpApiService;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/currencies")

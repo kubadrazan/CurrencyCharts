@@ -6,7 +6,6 @@ import pl.edu.pw.mini.zpoif.currencychartsfullstack.calculators.ExponentialMovin
 import pl.edu.pw.mini.zpoif.currencychartsfullstack.calculators.MovingAverageCalculator;
 import pl.edu.pw.mini.zpoif.currencychartsfullstack.domain.CurrencyBean;
 import pl.edu.pw.mini.zpoif.currencychartsfullstack.domain.CurrencyRates;
-import pl.edu.pw.mini.zpoif.currencychartsfullstack.excpetions.NbpApiClientException;
 import pl.edu.pw.mini.zpoif.currencychartsfullstack.services.NbpApiClient;
 import pl.edu.pw.mini.zpoif.currencychartsfullstack.services.NbpApiService;
 
