@@ -1,4 +1,4 @@
-import Rate from "src/interfaces/Rate";
+import type Rate from "src/interfaces/Rate";
 
 interface CurrencyRates {
   code: string;
