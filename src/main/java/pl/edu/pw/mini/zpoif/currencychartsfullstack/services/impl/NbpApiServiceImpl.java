@@ -6,6 +6,7 @@ import pl.edu.pw.mini.zpoif.currencychartsfullstack.calculators.ExponentialMovin
 import pl.edu.pw.mini.zpoif.currencychartsfullstack.calculators.MovingAverageCalculator;
 import pl.edu.pw.mini.zpoif.currencychartsfullstack.domain.CurrencyBean;
 import pl.edu.pw.mini.zpoif.currencychartsfullstack.domain.CurrencyRates;
+import pl.edu.pw.mini.zpoif.currencychartsfullstack.excpetions.NbpApiClientException;
 import pl.edu.pw.mini.zpoif.currencychartsfullstack.services.NbpApiClient;
 import pl.edu.pw.mini.zpoif.currencychartsfullstack.services.NbpApiService;
 
@@ -14,6 +15,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Service
 public class NbpApiServiceImpl implements NbpApiService {
@@ -63,13 +66,21 @@ public class NbpApiServiceImpl implements NbpApiService {
                 dateDiff = TimeUnit.DAYS.convert(diffInMsec, TimeUnit.MILLISECONDS);
                 calendar.add(Calendar.DATE, Math.min(API_MAX_DAYS_RANGE - 1, (int)dateDiff));
 
-                CurrencyRates response = nbpApiClient.getCurrencyPrices(currencyCode, startDate, calendar.getTime());
-                if (currencyRates == null) {
-                    currencyRates = response;
+                try {
+                    CurrencyRates response = nbpApiClient.getCurrencyPrices(currencyCode, startDate, calendar.getTime());
+                    if (currencyRates == null) {
+                        currencyRates = response;
+                    }
+                    else {
+                        currencyRates.addRates(response.getRates());
+                    }
                 }
-                else {
-                    currencyRates.addRates(response.getRates());
+                catch (NbpApiClientException ex)
+                {
+                    String msg = "Error when getting data for this period: ${startDate} - ${endDate}";
+                    Logger.getLogger(NbpApiServiceImpl.class.getName()).log(Level.WARNING, msg, ex);
                 }
+
 
                 calendar.add(Calendar.DATE, 1);
                 startDate = calendar.getTime();

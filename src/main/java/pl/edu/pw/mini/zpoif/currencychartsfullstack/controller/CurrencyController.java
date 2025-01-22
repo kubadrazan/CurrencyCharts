@@ -12,8 +12,6 @@ import java.util.Date;
 @RequestMapping("/api/currencies")
 public class CurrencyController {
 
-    private final Date MIN_DATE = new Date(2002, Calendar.JANUARY, 2);
-
     private final NbpApiService nbpApiService;
 
     public CurrencyController(final NbpApiService nbpApiService) {
@@ -54,7 +52,7 @@ public class CurrencyController {
             int windowSize) {
 
         if (windowSize <= 0) {
-            return ResponseEntity.badRequest().body("400 BadRequest - windowSize must be greater than 0");
+            return ResponseEntity.badRequest().body("400 BadRequest - WindowSize must be greater than 0");
         }
 
         return ResponseEntity.ok(nbpApiService.getCurrencyMovingAverage(code, startDate, endDate, windowSize));
@@ -79,6 +77,5 @@ public class CurrencyController {
 
         return ResponseEntity.ok(nbpApiService.getCurrencyExponentialMovingAverage(code, startDate, endDate, alpha));
     }
-
 
 }
