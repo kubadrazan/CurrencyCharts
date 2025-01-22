@@ -52,5 +52,27 @@ class CurrencyService extends ApiService
 
     return this.get<CurrencyRates>(baseUrl.toString());
   }
+
+  async getCurrencyExponentialMovingAverage(code: string, startDate?: string, endDate?: string, alpha?: Number): Promise<CurrencyRates> {
+    const searchParams: Record<string, any> = new URLSearchParams();
+
+    if (!!startDate) {
+      searchParams.append("startDate", startDate);
+    }
+
+    if (!!endDate) {
+      searchParams.append("endDate", endDate);
+    }
+
+    if (!!alpha) {
+      searchParams.append("alpha", alpha);
+    }
+
+    let baseUrl = `/currencies/${code}/ema`;
+
+    baseUrl += '?' + searchParams.toString();
+
+    return this.get<CurrencyRates>(baseUrl.toString());
+  }
 }
 export default CurrencyService
