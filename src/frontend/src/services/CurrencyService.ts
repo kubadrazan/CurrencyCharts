@@ -1,13 +1,35 @@
 import ApiService from "./ApiService";
 import type Currency from "../interfaces/Currency"
-import CurrencyRates from "src/interfaces/CurrencyRates";
-import { createCurrency } from "../interfaces/Currency"
-class CurrencyService extends ApiService
-{
-  constructor()
-  {
+import type CurrencyRates from "src/interfaces/CurrencyRates";
+import {createCurrency} from "../interfaces/Currency"
+
+class CurrencyService extends ApiService {
+  constructor() {
     super("/api");
   }
+
+  options = [
+    {label: 'Moving Average', value: 'ma'},
+    {label: 'Exp Moving Average', value: 'ema'},
+  ];
+
+  methodDictionary: Record<string, Function> = {
+    ma: this.getCurrencyMovingAverage.bind(this),
+    ema: this.getCurrencyExponentialMovingAverage.bind(this),
+  };
+
+  // Example usage of the dictionary
+  async executeMethod(methodKey: string, code: string, startDate?: string, endDate?: string, param?: number
+  ): Promise<CurrencyRates> {
+    const method = this.methodDictionary[methodKey];
+    if (method) {
+      return await method(code, startDate, endDate, param);
+    } else {
+      throw new Error(`Method for key ${methodKey} not found.`);
+    }
+  }
+
+
   async getCurrencies(): Promise<Currency[]> {
     const rawData = await this.get<any[]>("/currencies/all");
     return rawData.map(item => createCurrency(item.code, item.currency));
@@ -31,7 +53,7 @@ class CurrencyService extends ApiService
     return this.get<CurrencyRates>(baseUrl.toString());
   }
 
-  async getCurrencyMovingAverage(code: string, startDate?: string, endDate?: string, windowSize?: Number): Promise<CurrencyRates> {
+  async getCurrencyMovingAverage(code: string, startDate?: string, endDate?: string, windowSize?: number): Promise<CurrencyRates> {
     const searchParams: Record<string, any> = new URLSearchParams();
 
     if (!!startDate) {
@@ -50,10 +72,10 @@ class CurrencyService extends ApiService
 
     baseUrl += '?' + searchParams.toString();
 
-    return this.get<CurrencyRates>(baseUrl.toString());
+    return this.get<CurrencyRates>(baseUrl);
   }
 
-  async getCurrencyExponentialMovingAverage(code: string, startDate?: string, endDate?: string, alpha?: Number): Promise<CurrencyRates> {
+  async getCurrencyExponentialMovingAverage(code: string, startDate?: string, endDate?: string, alpha?: number): Promise<CurrencyRates> {
     const searchParams: Record<string, any> = new URLSearchParams();
 
     if (!!startDate) {
@@ -72,7 +94,8 @@ class CurrencyService extends ApiService
 
     baseUrl += '?' + searchParams.toString();
 
-    return this.get<CurrencyRates>(baseUrl.toString());
+    return this.get<CurrencyRates>(baseUrl);
   }
 }
+
 export default CurrencyService

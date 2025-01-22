@@ -1,20 +1,10 @@
 <template>
-  <q-page class="row items-center justify-evenly">
-    <CurrenciesSelector v-model="currencies"/>
-<!--    https://stackoverflow.com/questions/73575535/how-to-implement-qdate-range-selection-with-qinput-->
-    <q-input filled :model-value="`${dateRange.from} - ${dateRange.to}`">
-      <template v-slot:append>
-        <q-icon name="event" class="cursor-pointer">
-          <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-            <q-date v-model="dateRange" range mask="YYYY-MM-DD">
-              <div class="row items-center justify-end">
-                <q-btn v-close-popup label="Close" color="primary" flat />
-              </div>
-            </q-date>
-          </q-popup-proxy>
-        </q-icon>
-      </template>
-    </q-input>    <Chart :currencies="currencies" :dateRange="dateRange"/>
+  <q-page class="main">
+      <Chart :currencies="currencies" :dateRange="dateRange" />
+      <div class="grid">
+        <DataSelector v-model="dateRange" />
+        <CurrenciesSelector v-model="currencies" />
+      </div>
   </q-page>
 </template>
 
@@ -22,8 +12,22 @@
 import {ref} from 'vue';
 import Chart from 'components/Chart.vue'
 import CurrenciesSelector from 'components/CurrenciesSelector.vue'
-import Currency from "src/interfaces/Currency";
+import type Currency from "src/interfaces/Currency";
+import DataSelector from "components/DataSelector.vue";
 
 const currencies = ref<Currency[]>([]);
-let dateRange =  ref({ from: '2020-07-08', to: '2020-07-17' });
+const dateRange =  ref({ from: '2020-07-08', to: '2020-07-17' });
 </script>
+
+<style>
+.main {
+  display: flex;
+  gap: 1rem;
+  margin-top: 10px;
+  position: relative;
+  flex-wrap: nowrap;
+  align-items: stretch;
+}
+
+
+</style>

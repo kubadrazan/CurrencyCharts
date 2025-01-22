@@ -2,19 +2,21 @@
   <div class="currencies_selection">
       <q-chip square v-for="(currency, index) in currencies" :key="index" :size="chipSize"
               removable @remove="removeFromCurrencyList(currency)" >{{currency.code}} <q-option-group
-          :options="currency.options"
+          :options="currencyService.options"
           type="toggle"
           v-model="currency.group"
+          inline
       />
       </q-chip>
         <q-select v-if="count < 5"
       filled color="purple-12" v-model="selectedItem" @update:modelValue="selectItem()" :options="options" label="Select a currency" option-label="currency" option-value="code" display-value="Select Currency"></q-select>
-      </div>
+  </div>
 </template>
 
 <script lang="ts">
 import CurrencyService from "../services/CurrencyService";
-import Currency, {createCurrency} from "src/interfaces/Currency";
+import type Currency from "src/interfaces/Currency";
+import {createCurrency} from "src/interfaces/Currency";
 
 export default {
   props: {
@@ -25,7 +27,7 @@ export default {
   },
   data() {
     return {
-      selectedItem: createCurrency() as Currency,
+      selectedItem: createCurrency(),
       count: 0,
       options: [] as Currency[],
       currencies: [] as Currency[],
@@ -35,13 +37,16 @@ export default {
     this.getOptions();
   },
   computed: {
+    currencyService() {
+      return new CurrencyService();
+    },
     chipSize() {
       if (this.$q.screen.xs) {
-        return 'sm'; // Small size for extra-small screens
+        return 's'; // Small size for extra-small screens
       } else if (this.$q.screen.sm) {
-        return 'md'; // Medium size for small screens
+        return 'sm'; // Medium size for small screens
       } else {
-        return 'lg'; // Larger size for medium and larger screens
+        return 'md'; // Larger size for medium and larger screens
       }
     },
   },
@@ -77,7 +82,7 @@ export default {
 <style>
 
 .currencies_selection {
-  display: flex;
+  display: grid;
   gap: 1rem;
   margin-top: 10px;
   position: relative;
