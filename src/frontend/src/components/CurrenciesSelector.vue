@@ -1,15 +1,19 @@
 <template>
   <div class="currencies_selection">
-      <q-chip square v-for="(currency, index) in currencies" :key="index" :size="chipSize"
-              removable @remove="removeFromCurrencyList(currency)" >{{currency.code}} <q-option-group
-          :options="currencyService.options"
-          type="toggle"
-          v-model="currency.group"
-          inline
-      />
-      </q-chip>
-        <q-select v-if="count < 5"
-      filled color="purple-12" v-model="selectedItem" @update:modelValue="selectItem()" :options="options" label="Select a currency" option-label="currency" option-value="code" display-value="Select Currency"></q-select>
+    <q-expansion-item expand-separator square group="currency-chips" v-for="(currency, index) in currencies" :key="index" :size="chipSize">
+      <template v-slot:header>
+        <div class="q-gutter-xs flex justify-between items-center">
+          <span>{{ currency.code }}</span>
+          <q-btn flat round dense icon="close" @click.stop="removeFromCurrencyList(currency)"/>
+        </div>
+      </template>
+        <q-option-group :options="currencyService.options" type="toggle" v-model="currency.group"/>
+    </q-expansion-item>
+
+    <q-select v-if="count < 5"
+              filled color="purple-12" v-model="selectedItem" @update:modelValue="selectItem()" :options="options"
+              label="Select a currency" option-label="currency" option-value="code"
+              display-value="Select Currency"></q-select>
   </div>
 </template>
 
@@ -52,14 +56,14 @@ export default {
   },
   methods: {
     selectItem() {
-      if(this.selectedItem.code != "") {
+      if (this.selectedItem.code != "") {
         this.currencies.push(this.selectedItem);
         this.$emit('update:modelValue', this.currencies);
         this.count++;
         this.options = this.options.filter(option => option !== this.selectedItem);
         this.selectedItem = createCurrency();
       }
-      },
+    },
     removeFromCurrencyList(deletedItem: Currency) {
       this.currencies = this.currencies.filter(item => item !== deletedItem);
       this.$emit('update:modelValue', this.currencies);
