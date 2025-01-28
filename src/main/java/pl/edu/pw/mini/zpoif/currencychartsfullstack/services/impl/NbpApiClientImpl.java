@@ -9,7 +9,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import pl.edu.pw.mini.zpoif.currencychartsfullstack.domain.CurrenciesWrapper;
 import pl.edu.pw.mini.zpoif.currencychartsfullstack.domain.CurrencyRates;
-import pl.edu.pw.mini.zpoif.currencychartsfullstack.excpetions.NbpApiClientException;
+import pl.edu.pw.mini.zpoif.currencychartsfullstack.exceptions.NbpApiClientException;
 import pl.edu.pw.mini.zpoif.currencychartsfullstack.services.NbpApiClient;
 
 import java.util.Date;

@@ -6,15 +6,15 @@ import pl.edu.pw.mini.zpoif.currencychartsfullstack.calculators.ExponentialMovin
 import pl.edu.pw.mini.zpoif.currencychartsfullstack.calculators.MovingAverageCalculator;
 import pl.edu.pw.mini.zpoif.currencychartsfullstack.domain.CurrencyBean;
 import pl.edu.pw.mini.zpoif.currencychartsfullstack.domain.CurrencyRates;
-import pl.edu.pw.mini.zpoif.currencychartsfullstack.excpetions.NbpApiClientException;
+import pl.edu.pw.mini.zpoif.currencychartsfullstack.exceptions.NbpApiClientException;
 import pl.edu.pw.mini.zpoif.currencychartsfullstack.services.NbpApiClient;
 import pl.edu.pw.mini.zpoif.currencychartsfullstack.services.NbpApiService;
+import pl.edu.pw.mini.zpoif.currencychartsfullstack.utils.DateUtils;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -44,15 +44,10 @@ public class NbpApiServiceImpl implements NbpApiService {
         }
 
         if (startDate == null) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.set(Calendar.YEAR, 2002);
-            calendar.set(Calendar.MONTH, Calendar.JANUARY);
-            calendar.set(Calendar.DAY_OF_MONTH, 2);
-            startDate = calendar.getTime();
+            startDate = DateUtils.getDate(2002, Calendar.JANUARY, 2);
         }
 
-        long diffInMsec = Math.abs(startDate.getTime() - endDate.getTime());
-        long dateDiff = TimeUnit.DAYS.convert(diffInMsec, TimeUnit.MILLISECONDS);
+        long dateDiff = DateUtils.DateDiffDays(startDate, endDate);
         if (dateDiff <= API_MAX_DAYS_RANGE) {
             return nbpApiClient.getCurrencyPrices(currencyCode, startDate, endDate);
         }
@@ -62,8 +57,7 @@ public class NbpApiServiceImpl implements NbpApiService {
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(startDate);
             while (calendar.getTime().before(endDate)) {
-                diffInMsec = Math.abs(startDate.getTime() - endDate.getTime());
-                dateDiff = TimeUnit.DAYS.convert(diffInMsec, TimeUnit.MILLISECONDS);
+                dateDiff = DateUtils.DateDiffDays(startDate, endDate);
                 calendar.add(Calendar.DATE, Math.min(API_MAX_DAYS_RANGE - 1, (int)dateDiff));
 
                 try {
@@ -81,7 +75,6 @@ public class NbpApiServiceImpl implements NbpApiService {
                     Logger.getLogger(NbpApiServiceImpl.class.getName()).log(Level.WARNING, msg, ex);
                 }
 
-
                 calendar.add(Calendar.DATE, 1);
                 startDate = calendar.getTime();
             }
@@ -95,12 +88,8 @@ public class NbpApiServiceImpl implements NbpApiService {
                                                   @Nullable Date endDate,
                                                   int windowSize) {
         CurrencyRates currencyRates = getCurrencyPrice(currencyCode, startDate, endDate);
-        MovingAverageCalculator<BigDecimal> movingAverageCalculator = new MovingAverageCalculator<>(windowSize);
-        currencyRates.getRates().forEach(currencyBean -> {
-            movingAverageCalculator.add(currencyBean.getPrice());
-            double ma = movingAverageCalculator.getMovingAverage();
-            currencyBean.setPrice(new BigDecimal(ma));
-        });
+        MovingAverageCalculator<BigDecimal> maCalculator = new MovingAverageCalculator<>(windowSize);
+        currencyRates.calculateIndicator(maCalculator);
         return currencyRates;
     }
 
@@ -112,10 +101,7 @@ public class NbpApiServiceImpl implements NbpApiService {
         CurrencyRates currencyRates = getCurrencyPrice(currencyCode, startDate, endDate);
         ExponentialMovingAverageCalculator<BigDecimal> emaCalculator =
                 new ExponentialMovingAverageCalculator<>(alpha);
-        currencyRates.getRates().forEach(currencyBean -> {
-            Double ema = emaCalculator.calculateEMA(currencyBean.getPrice());
-            currencyBean.setPrice(new BigDecimal(ema));
-        });
+        currencyRates.calculateIndicator(emaCalculator);
         return currencyRates;
     }
 }
