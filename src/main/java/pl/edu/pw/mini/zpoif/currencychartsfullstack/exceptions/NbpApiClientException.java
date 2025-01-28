@@ -1,4 +1,4 @@
-package pl.edu.pw.mini.zpoif.currencychartsfullstack.excpetions;
+package pl.edu.pw.mini.zpoif.currencychartsfullstack.exceptions;
 
 public class NbpApiClientException extends RuntimeException {
 

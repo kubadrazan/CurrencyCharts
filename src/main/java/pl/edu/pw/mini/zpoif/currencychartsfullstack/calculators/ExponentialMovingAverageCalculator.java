@@ -1,6 +1,7 @@
 package pl.edu.pw.mini.zpoif.currencychartsfullstack.calculators;
 
-public class ExponentialMovingAverageCalculator<T extends Number> {
+public class ExponentialMovingAverageCalculator<T extends Number> implements ICalculator<T> {
+
     private final double alpha;
     private Double previousEMA;
 
@@ -12,7 +13,12 @@ public class ExponentialMovingAverageCalculator<T extends Number> {
         this.previousEMA = null;
     }
 
-    public Double calculateEMA(T newValue) {
+    @Override
+    public double calculate(T newValue) {
+        return calculateEMA(newValue);
+    }
+
+    private Double calculateEMA(T newValue) {
         if (previousEMA == null) {
             previousEMA = newValue.doubleValue();
         } else {

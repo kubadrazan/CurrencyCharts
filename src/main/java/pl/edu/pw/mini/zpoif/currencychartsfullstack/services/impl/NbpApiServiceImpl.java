@@ -6,7 +6,7 @@ import pl.edu.pw.mini.zpoif.currencychartsfullstack.calculators.ExponentialMovin
 import pl.edu.pw.mini.zpoif.currencychartsfullstack.calculators.MovingAverageCalculator;
 import pl.edu.pw.mini.zpoif.currencychartsfullstack.domain.CurrencyBean;
 import pl.edu.pw.mini.zpoif.currencychartsfullstack.domain.CurrencyRates;
-import pl.edu.pw.mini.zpoif.currencychartsfullstack.excpetions.NbpApiClientException;
+import pl.edu.pw.mini.zpoif.currencychartsfullstack.exceptions.NbpApiClientException;
 import pl.edu.pw.mini.zpoif.currencychartsfullstack.services.NbpApiClient;
 import pl.edu.pw.mini.zpoif.currencychartsfullstack.services.NbpApiService;
 
@@ -81,7 +81,6 @@ public class NbpApiServiceImpl implements NbpApiService {
                     Logger.getLogger(NbpApiServiceImpl.class.getName()).log(Level.WARNING, msg, ex);
                 }
 
-
                 calendar.add(Calendar.DATE, 1);
                 startDate = calendar.getTime();
             }
@@ -95,12 +94,8 @@ public class NbpApiServiceImpl implements NbpApiService {
                                                   @Nullable Date endDate,
                                                   int windowSize) {
         CurrencyRates currencyRates = getCurrencyPrice(currencyCode, startDate, endDate);
-        MovingAverageCalculator<BigDecimal> movingAverageCalculator = new MovingAverageCalculator<>(windowSize);
-        currencyRates.getRates().forEach(currencyBean -> {
-            movingAverageCalculator.add(currencyBean.getPrice());
-            double ma = movingAverageCalculator.getMovingAverage();
-            currencyBean.setPrice(new BigDecimal(ma));
-        });
+        MovingAverageCalculator<BigDecimal> maCalculator = new MovingAverageCalculator<>(windowSize);
+        currencyRates.calculateIndicator(maCalculator);
         return currencyRates;
     }
 
@@ -112,10 +107,7 @@ public class NbpApiServiceImpl implements NbpApiService {
         CurrencyRates currencyRates = getCurrencyPrice(currencyCode, startDate, endDate);
         ExponentialMovingAverageCalculator<BigDecimal> emaCalculator =
                 new ExponentialMovingAverageCalculator<>(alpha);
-        currencyRates.getRates().forEach(currencyBean -> {
-            Double ema = emaCalculator.calculateEMA(currencyBean.getPrice());
-            currencyBean.setPrice(new BigDecimal(ema));
-        });
+        currencyRates.calculateIndicator(emaCalculator);
         return currencyRates;
     }
 }

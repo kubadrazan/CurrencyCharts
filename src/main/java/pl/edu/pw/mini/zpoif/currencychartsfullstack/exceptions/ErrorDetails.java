@@ -1,4 +1,4 @@
-package pl.edu.pw.mini.zpoif.currencychartsfullstack.excpetions;
+package pl.edu.pw.mini.zpoif.currencychartsfullstack.exceptions;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

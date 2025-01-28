@@ -1,6 +1,7 @@
 package pl.edu.pw.mini.zpoif.currencychartsfullstack.controller;
 
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.edu.pw.mini.zpoif.currencychartsfullstack.services.NbpApiService;
@@ -17,7 +18,7 @@ public class CurrencyController {
         this.nbpApiService = nbpApiService;
     }
 
-    @GetMapping("/all")
+    @GetMapping(value = "/all")
     public ResponseEntity<?> getAllCurrencies() {
 
         return ResponseEntity.ok(nbpApiService.getAllCurrencies());

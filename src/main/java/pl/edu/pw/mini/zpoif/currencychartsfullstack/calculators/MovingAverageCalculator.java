@@ -3,7 +3,7 @@ package pl.edu.pw.mini.zpoif.currencychartsfullstack.calculators;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MovingAverageCalculator<T extends Number> {
+public class MovingAverageCalculator<T extends Number> implements ICalculator<T> {
 
     private final List<T> buffer;
     private final int windowSize;
@@ -15,7 +15,13 @@ public class MovingAverageCalculator<T extends Number> {
         this.buffer = new ArrayList<>(windowSize);
     }
 
-    public void add(T value) {
+    @Override
+    public double calculate(T newValue) {
+        add(newValue);
+        return getMovingAverage();
+    }
+
+    private void add(T value) {
         if (buffer.size() < windowSize) {
             buffer.add(value);
         } else {
@@ -28,7 +34,7 @@ public class MovingAverageCalculator<T extends Number> {
         }
     }
 
-    public double getMovingAverage() {
+    private double getMovingAverage() {
         if (count == 0) {
             return Double.NaN;
         }

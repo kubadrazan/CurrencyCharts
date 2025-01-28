@@ -6,7 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import pl.edu.pw.mini.zpoif.currencychartsfullstack.calculators.ICalculator;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Data
@@ -31,5 +33,12 @@ public class CurrencyRates {
 
     public void addRates(List<Rate> rates){
         this.rates.addAll(rates);
+    }
+
+    public void calculateIndicator(ICalculator<BigDecimal> calculator){
+        rates.forEach(rate -> {
+            double ma = calculator.calculate(rate.getPrice());
+            rate.setPrice(new BigDecimal(ma));
+        });
     }
 }
