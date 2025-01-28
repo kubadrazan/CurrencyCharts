@@ -1,6 +1,6 @@
 <!--    https://stackoverflow.com/questions/73575535/how-to-implement-qdate-range-selection-with-qinput-->
 <template>
-  <q-input filled :model-value="`${dateRange.from} - ${dateRange.to}`">
+  <q-input filled :model-value="`${(dateRange !== null && dateRange.from !== null) ? dateRange.from : ''} - ${(dateRange !== null && dateRange.to !== null) ? dateRange.to : ''}`">
     <template v-slot:append>
       <q-icon name="event" class="cursor-pointer">
         <q-popup-proxy cover transition-show="scale" transition-hide="scale">
@@ -28,11 +28,12 @@ export default {
   data() {
     return {
       currencies: [] as Currency[],
-      dateRange: {from: '2020-07-08', to: '2020-07-17'},
+      dateRange: {from: '2024-07-08', to: '2024-07-17'},
     };
   },
   methods: {
     updateDateRange() {
+      if(this.dateRange != null && this.dateRange.from != null && this.dateRange.to != null)
         this.$emit('update:modelValue', this.dateRange);
     },
   },
