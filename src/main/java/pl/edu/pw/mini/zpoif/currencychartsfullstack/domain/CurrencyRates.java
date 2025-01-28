@@ -2,6 +2,7 @@ package pl.edu.pw.mini.zpoif.currencychartsfullstack.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,11 +19,8 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CurrencyRates {
 
-    @JsonProperty("code")
-    private String code;
-
-    @JsonProperty("currency")
-    private String name;
+    @JsonUnwrapped
+    private CurrencyBean currencyBean;
 
     @JsonProperty("rates")
     private List<Rate> rates;
