@@ -135,7 +135,7 @@ export default {
           data: result.rates.map(rate => Number(rate.mid.toFixed(2)))
         }
         this.chartOptions.fill.type = [...this.chartOptions.fill.type, "solid"]
-        this.chartOptions.stroke.dashArray = [...this.chartOptions.stroke.dashArray, result.rates.length]
+        this.chartOptions.stroke.dashArray = [...this.chartOptions.stroke.dashArray, 10]
         this.series = [...this.series, serie];
       }
     }
